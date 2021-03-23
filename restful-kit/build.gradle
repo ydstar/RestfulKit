@@ -47,3 +47,4 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 }
+apply from: './bintray.gradle'
