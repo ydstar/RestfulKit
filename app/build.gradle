@@ -41,9 +41,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-
-    implementation project(path: ':restful-kit')
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+
+
+//    implementation project(path: ':restful-kit')
+    implementation 'com.android.ydkit:restful-kit:1.0.0'
 
 }
