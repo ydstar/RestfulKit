@@ -46,23 +46,23 @@ interface ApiService {
 ### 发起请求
 
 ```java
-        //初始化
-        val baseUrl = "https://api.github.com/"
-        val iRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
-        iRestful.addInterceptor(BizInterceptor())
+//初始化
+val baseUrl = "https://api.github.com/"
+val iRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
+iRestful.addInterceptor(BizInterceptor())
 
-        //发起异步请求
-        iRestful.create(ApiService::class.java)
-            .groupList(1,10)
-            .enqueue(object : ICallBack<List<User>> {
-                override fun onSuccess(response: IResponse<List<User>>) {
-                    val data = response.data
-                }
+//发起异步请求
+iRestful.create(ApiService::class.java)
+         .groupList(1,10)
+         .enqueue(object : ICallBack<List<User>> {
+             override fun onSuccess(response: IResponse<List<User>>) {
+                 val data = response.data
+             }
 
-                override fun onFailed(throwable: Throwable) {
+             override fun onFailed(throwable: Throwable) {
 
-                }
-            })
+             }
+         })
 ```
 
 
