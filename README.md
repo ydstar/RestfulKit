@@ -27,8 +27,7 @@ dependencies {
 
 ## 简单使用
 用法和retrofit保持一致
-
-### 定义接口
+定义接口
 ```java
 interface ApiService {
     @GET("group/{id}/users")
@@ -43,7 +42,7 @@ interface ApiService {
 
 ```
 
-### 发起请求
+发起请求
 
 ```java
 //初始化
