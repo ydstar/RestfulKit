@@ -17,7 +17,7 @@ class BizInterceptor: IInterceptor {
         val response = chain.response()
         if (chain.isRequestPeriod) {
             //添加token
-            request.addHeader("auth-token", "MTU5Mjg1MDg3NDcwNw11.26==")
+            request.addHeader("auth-token", "token")
         } else if (response != null) {
             var outputBuilder = StringBuilder()
             val httpMethod: String =

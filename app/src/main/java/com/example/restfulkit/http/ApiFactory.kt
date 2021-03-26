@@ -12,7 +12,7 @@ import com.restful.kit.IRestful
 object ApiFactory {
 
 
-    val HTTPS_BASE_URL = "https://api.devio.org/as/"
+    val HTTPS_BASE_URL = "https://api.github.com/"
 
     val baseUrl = HTTPS_BASE_URL
     private val iRestful: IRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
