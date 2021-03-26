@@ -26,7 +26,7 @@ dependencies {
 ```
 
 ## 简单使用
-用法和retrofit保持一致,定义接口
+用法和retrofit保持一致
 
 ### 定义接口
 ```java
@@ -66,7 +66,7 @@ iRestful.create(ApiService::class.java)
 ```
 
 
-## 注解说明
+### 注解说明
 | 注解名称      |作用  |
 | :-------- | :--------|
 | GET       | GET请求方式  |
