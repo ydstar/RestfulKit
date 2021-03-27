@@ -27,7 +27,7 @@ dependencies {
 
 ## 简单使用
 用法和retrofit保持一致
-定义接口
+定义接口,下面接口中是所有注解的示例用法,实际开发使用中还需要自己按需搭配注解
 ```java
 interface ApiService {
     @GET("group/{id}/users")
