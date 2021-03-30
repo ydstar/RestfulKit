@@ -12,7 +12,7 @@ import com.example.restfulkit.http.BizInterceptor
 import com.example.restfulkit.http.RetrofitCallFactory
 import com.restful.kit.RestfulKit
 
-import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.ICallBack
 import com.restful.kit.response.RestfulResponse
 
 
@@ -28,11 +28,10 @@ class MainActivity : AppCompatActivity() {
      * POST请求
      */
     fun onClickPrint(view: View?) {
-
         ApiFactory
             .create(ApiService::class.java)
             .login("swifty", "123456")
-            .enqueue(object : RestfulCallBack<String> {
+            .enqueue(object : ICallBack<String> {
                 override fun onSuccess(response: RestfulResponse<String>) {
                     if (response.code == RestfulResponse.SUCCESS) {
                         println(response.data + "  SUCCESS 线程: " + Thread.currentThread().name)
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         //发起异步请求
         restfulKit.create(ApiService::class.java)
             .groupList(1, 10)
-            .enqueue(object : RestfulCallBack<List<User>> {
+            .enqueue(object : ICallBack<List<User>> {
                 override fun onSuccess(response: RestfulResponse<List<User>>) {
                     val data = response.data
                 }

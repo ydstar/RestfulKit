@@ -9,6 +9,6 @@ import java.lang.reflect.Type
  * Email: hydznsqk@163.com
  * Des:
  */
-interface Convert {
+interface RestfulConvert {
     fun <T> convert(rawData: String, dataType: Type): RestfulResponse<T>
 }

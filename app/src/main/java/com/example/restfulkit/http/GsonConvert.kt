@@ -2,7 +2,7 @@ package com.example.restfulkit.http
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.restful.kit.Convert
+import com.restful.kit.RestfulConvert
 import com.restful.kit.response.RestfulResponse
 
 import org.json.JSONArray
@@ -16,7 +16,7 @@ import java.lang.reflect.Type
  * Email: hydznsqk@163.com
  * Des: 自定义json解析器
  */
-class GsonConvert : Convert {
+class GsonConvert : RestfulConvert {
     private var mGson = Gson()
     override fun <T> convert(rawData: String, dataType: Type): RestfulResponse<T> {
         val response: RestfulResponse<T> = RestfulResponse<T>()

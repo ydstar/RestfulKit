@@ -13,7 +13,7 @@ package com.restful.kit.annotation
  *         @BaseUrl("https://api.github.com/")
  *         @Headers("auth-token:token", "token")
  *         @CacheStrategy(CacheStrategy.CACHE_FIRST)
- *         fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
+ *         fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): ICall<List<User>>
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

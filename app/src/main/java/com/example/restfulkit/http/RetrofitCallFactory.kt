@@ -1,10 +1,10 @@
 package com.example.restfulkit.http
 
 
-import com.restful.kit.Convert
-import com.restful.kit.request.RestfulCall
+import com.restful.kit.RestfulConvert
+import com.restful.kit.request.ICall
 import com.restful.kit.request.RestfulRequest
-import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.ICallBack
 import com.restful.kit.response.RestfulResponse
 import okhttp3.FormBody
 import okhttp3.MediaType
@@ -24,10 +24,10 @@ import java.lang.IllegalStateException
  * Email: hydznsqk@163.com
  * Des:自定义网络请求工厂类
  */
-class RetrofitCallFactory(baseUrl: String) : RestfulCall.Factory {
+class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
 
 
-    private var mConvert: Convert
+    private var mConvert: RestfulConvert
     private var mApiService: ApiService
 
     init {
@@ -38,11 +38,11 @@ class RetrofitCallFactory(baseUrl: String) : RestfulCall.Factory {
         mConvert = GsonConvert()
     }
 
-    override fun newCall(request: RestfulRequest): RestfulCall<Any> {
+    override fun newCall(request: RestfulRequest): ICall<Any> {
         return RetrofitCall(request)
     }
 
-    internal inner class RetrofitCall<T>(val request: RestfulRequest) : RestfulCall<T> {
+    internal inner class RetrofitCall<T>(val request: RestfulRequest) : ICall<T> {
         /**
          * 同步请求
          */
@@ -58,7 +58,7 @@ class RetrofitCallFactory(baseUrl: String) : RestfulCall.Factory {
         /**
          * 异步请求
          */
-        override fun enqueue(callBack: RestfulCallBack<T>) {
+        override fun enqueue(callBack: ICallBack<T>) {
             //创建真正的请求call
             val realCall: Call<ResponseBody> = createRealCall(request)
             realCall.enqueue(object : Callback<ResponseBody>{

@@ -6,7 +6,7 @@ package com.restful.kit.response
  * Email: hydznsqk@163.com
  * Des:
  */
-interface RestfulCallBack<T>{
+interface ICallBack<T>{
 
     /**
      * 请求成功

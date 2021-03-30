@@ -2,7 +2,7 @@ package com.example.restfulkit.api
 
 
 import com.restful.kit.annotation.*
-import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.ICall
 
 
 interface ApiService {
@@ -14,13 +14,13 @@ interface ApiService {
     @BaseUrl("https://api.github.com/")
     @Headers("auth-token:token", "token")
     @CacheStrategy(CacheStrategy.CACHE_FIRST)
-    fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
+    fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): ICall<List<User>>
 
 
     @POST("user/login")
     fun login(
         @Filed("userName") userName: String,
         @Filed("password") password: String
-    ): RestfulCall<String>
+    ): ICall<String>
 }
 

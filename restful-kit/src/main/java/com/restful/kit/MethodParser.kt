@@ -1,7 +1,7 @@
 package com.restful.kit
 
 
-import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.ICall
 import com.restful.kit.request.RestfulRequest
 import com.restful.kit.annotation.*
 import java.lang.IllegalStateException
@@ -69,7 +69,7 @@ class MethodParser(private val baseUrl: String, method: Method) {
      *  @BaseUrl("https://api.github.com/")
      *  @Headers("auth-token:token", "token")
      *  @CacheStrategy(CacheStrategy.CACHE_FIRST)
-     *  fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
+     *  fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): ICall<List<User>>
      */
     private fun parseMethodAnnotations(method: Method) {
         val annotations = method.annotations
@@ -128,14 +128,14 @@ class MethodParser(private val baseUrl: String, method: Method) {
 
     /**
      * 解析返回值类型
-     * 1.判断返回值是不是RestfulCall,如果不是就抛出异常
+     * 1.判断返回值是不是ICall,如果不是就抛出异常
      * 2.判断泛型里面的参数只能有1个,必须只能有1个
      * 3.检查泛型内的参数不能是接口,不能是未知类型的
      */
     private fun parseMethodReturnType(method: Method) {
         //如果返回值类型
-        if (method.returnType != RestfulCall::class.java) {
-            val format = String.format("方法 %s 的返回值必须是RestfulCall.class", method.name)
+        if (method.returnType != ICall::class.java) {
+            val format = String.format("方法 %s 的返回值必须是ICall.class", method.name)
             throw IllegalStateException(format)//非法状态异常
         }
 
@@ -166,11 +166,11 @@ class MethodParser(private val baseUrl: String, method: Method) {
     private fun validateGenericType(type: Type): Boolean {
         /**
          *wrong 错误
-         *  fun test():RestfulCall<Any>
-         *  fun test():RestfulCall<List<*>>
-         *  fun test():RestfulCall<ApiInterface>
+         *  fun test():ICall<Any>
+         *  fun test():ICall<List<*>>
+         *  fun test():ICall<ApiInterface>
          *expect 正确的预期
-         *  fun test():RestfulCall<User>
+         *  fun test():ICall<User>
          */
         //如果指定的泛型是集合类型的，那还检查集合的泛型参数
         if (type is GenericArrayType) {
@@ -210,7 +210,7 @@ class MethodParser(private val baseUrl: String, method: Method) {
     /**
      * 解析参数上的入参
      *  POST("/cities/{province}")
-     *  fun listCities(@Path("province") province: Int,@Filed("page") page: Int): RestfulCall<JsonObject>
+     *  fun listCities(@Path("province") province: Int,@Filed("page") page: Int): ICall<JsonObject>
      * 1.判断入参上都加注解了没,必须都加注解,目前支持Path或Field
      * 2.遍历传入的所有参数,看单个参数上的注解数量是否是1个,如果不是则抛出异常
      * 3.单个参数必须是基本数据类型和String类型,否则抛出异常

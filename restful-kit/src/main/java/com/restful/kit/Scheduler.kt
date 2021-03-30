@@ -2,9 +2,9 @@ package com.restful.kit
 
 import com.executor.kit.ExecutorKit
 import com.restful.kit.annotation.CacheStrategy
-import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.ICall
 import com.restful.kit.request.RestfulRequest
-import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.ICallBack
 import com.restful.kit.response.RestfulResponse
 import com.restful.kit.util.MainHandler
 import com.storage.kit.StorageKit
@@ -16,22 +16,22 @@ import com.storage.kit.StorageKit
  * Des:代理CallFactory创建出来的call对象，从而实现拦截器的派发动作
  */
 class Scheduler(
-    private val callFactory: RestfulCall.Factory,
+    private val callFactory: ICall.Factory,
     private val interceptorList: MutableList<RestfulInterceptor>
 ) {
 
 
-    fun newCall(request: RestfulRequest): RestfulCall<*> {
+    fun newCall(request: RestfulRequest): ICall<*> {
         val call = callFactory.newCall(request)
         return ProxyCall(call, request)
     }
 
-    internal inner class ProxyCall<T> : RestfulCall<T> {
+    internal inner class ProxyCall<T> : ICall<T> {
 
-        private val mDelegate: RestfulCall<T>
+        private val mDelegate: ICall<T>
         private val mRequest: RestfulRequest
 
-        constructor(delegate: RestfulCall<T>, request: RestfulRequest) {
+        constructor(delegate: ICall<T>, request: RestfulRequest) {
             this.mDelegate = delegate
             this.mRequest = request
         }
@@ -63,7 +63,7 @@ class Scheduler(
         /**
          * 异步请求
          */
-        override fun enqueue(callBack: RestfulCallBack<T>) {
+        override fun enqueue(callBack: ICallBack<T>) {
             //请求前的拦截器的派发
             dispatchInterceptor(mRequest, null)
             if (mRequest.cacheStrategy == CacheStrategy.CACHE_FIRST) {
@@ -80,7 +80,7 @@ class Scheduler(
             }
 
             //真正的请求
-            mDelegate.enqueue(object : RestfulCallBack<T> {
+            mDelegate.enqueue(object : ICallBack<T> {
                 override fun onSuccess(response: RestfulResponse<T>) {
                     //请求后的拦截器的派发
                     dispatchInterceptor(mRequest, response)
