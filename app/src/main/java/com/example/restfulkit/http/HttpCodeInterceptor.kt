@@ -1,6 +1,7 @@
 package com.example.restfulkit.http
 
-import com.restful.kit.IInterceptor
+
+import com.restful.kit.RestfulInterceptor
 
 
 /**
@@ -9,13 +10,13 @@ import com.restful.kit.IInterceptor
  * Email: hydznsqk@163.com
  * Des:根据response 的 code 自动路由到相关页面
  */
-class HttpCodeInterceptor: IInterceptor {
+class HttpCodeInterceptor: RestfulInterceptor {
 
     companion object{
         const val RC_NEED_LOGIN = 5003               //请先登录
     }
 
-    override fun intercept(chain: IInterceptor.Chain): Boolean {
+    override fun intercept(chain: RestfulInterceptor.Chain): Boolean {
 
         val response = chain.response()
         if(!chain.isRequestPeriod && response!=null){

@@ -1,8 +1,8 @@
 package com.restful.kit
 
 
-import com.restful.kit.request.ICall
-import com.restful.kit.request.IRequest
+import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.RestfulRequest
 import com.restful.kit.annotation.*
 import java.lang.IllegalStateException
 import java.lang.reflect.*
@@ -16,7 +16,7 @@ import java.lang.reflect.*
 class MethodParser(private val baseUrl: String, method: Method) {
 
     //请求方式
-    @IRequest.METHOD
+    @RestfulRequest.METHOD
     var httpMethod: Int = 0
 
     //请求头
@@ -62,30 +62,31 @@ class MethodParser(private val baseUrl: String, method: Method) {
 
     /**
      * 解析方法上的注解
-     *      @Headers("auth-token:token", "accountId:123456")
-     *      @BaseUrl("https://www.baidu.com/")
-     *      @POST("/cities/{province}")
-     *      @GET("/cities")
-     *      @PUT("/cities")
-     *      @DELETE("/cities")
-     *     fun listCities(@Path("province") province: Int,@Filed("page") page: Int): ICall<JsonObject>
+     *  @GET("group/{id}/users")
+     *  @POST("group/{id}/users",formPost = false)
+     *  @DELETE("group/{id}/users",formPost = false)
+     *  @PUT("group/{id}/users",formPost = false)
+     *  @BaseUrl("https://api.github.com/")
+     *  @Headers("auth-token:token", "token")
+     *  @CacheStrategy(CacheStrategy.CACHE_FIRST)
+     *  fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
      */
     private fun parseMethodAnnotations(method: Method) {
         val annotations = method.annotations
         for (annotation in annotations) {
             if (annotation is GET) {
                 relativeUrl = annotation.value
-                httpMethod = IRequest.METHOD.GET
+                httpMethod = RestfulRequest.METHOD.GET
             } else if (annotation is POST) {
                 relativeUrl = annotation.value
-                httpMethod = IRequest.METHOD.POST
+                httpMethod = RestfulRequest.METHOD.POST
                 formPost = annotation.formPost
             } else if (annotation is PUT) {
                 formPost = annotation.formPost
-                httpMethod = IRequest.METHOD.PUT
+                httpMethod = RestfulRequest.METHOD.PUT
                 relativeUrl = annotation.value
             } else if (annotation is DELETE) {
-                httpMethod = IRequest.METHOD.DELETE
+                httpMethod = RestfulRequest.METHOD.DELETE
                 relativeUrl = annotation.value
             } else if (annotation is Headers) {
                 val headersList = annotation.value
@@ -113,10 +114,10 @@ class MethodParser(private val baseUrl: String, method: Method) {
 
         //require是检查,如果 httpMethod 既不是GET,也不是POST,也不是PUT,也不是DELETE,就会抛出异常
         require(
-            (httpMethod == IRequest.METHOD.GET)
-                    || (httpMethod == IRequest.METHOD.POST
-                    || (httpMethod == IRequest.METHOD.PUT)
-                    || (httpMethod == IRequest.METHOD.DELETE))
+            (httpMethod == RestfulRequest.METHOD.GET)
+                    || (httpMethod == RestfulRequest.METHOD.POST
+                    || (httpMethod == RestfulRequest.METHOD.PUT)
+                    || (httpMethod == RestfulRequest.METHOD.DELETE))
         ) {
             String.format("方法 %s 必须具有GET、POST、PUT,DELETE注解之一", method.name)
         }
@@ -127,14 +128,14 @@ class MethodParser(private val baseUrl: String, method: Method) {
 
     /**
      * 解析返回值类型
-     * 1.判断返回值是不是ICall,如果不是就抛出异常
+     * 1.判断返回值是不是RestfulCall,如果不是就抛出异常
      * 2.判断泛型里面的参数只能有1个,必须只能有1个
      * 3.检查泛型内的参数不能是接口,不能是未知类型的
      */
     private fun parseMethodReturnType(method: Method) {
         //如果返回值类型
-        if (method.returnType != ICall::class.java) {
-            val format = String.format("方法 %s 的返回值必须是ICall.class", method.name)
+        if (method.returnType != RestfulCall::class.java) {
+            val format = String.format("方法 %s 的返回值必须是RestfulCall.class", method.name)
             throw IllegalStateException(format)//非法状态异常
         }
 
@@ -165,11 +166,11 @@ class MethodParser(private val baseUrl: String, method: Method) {
     private fun validateGenericType(type: Type): Boolean {
         /**
          *wrong 错误
-         *  fun test():ICall<Any>
-         *  fun test():ICall<List<*>>
-         *  fun test():ICall<ApiInterface>
+         *  fun test():RestfulCall<Any>
+         *  fun test():RestfulCall<List<*>>
+         *  fun test():RestfulCall<ApiInterface>
          *expect 正确的预期
-         *  fun test():ICall<User>
+         *  fun test():RestfulCall<User>
          */
         //如果指定的泛型是集合类型的，那还检查集合的泛型参数
         if (type is GenericArrayType) {
@@ -187,29 +188,29 @@ class MethodParser(private val baseUrl: String, method: Method) {
     }
 
     /**
-     * 根据method和args参数以及各种注解什么的封装成IRequest对象
+     * 根据method和args参数以及各种注解什么的封装成RestfulRequest对象
      */
-    fun newRequest(method: Method, args: Array<out Any>?): IRequest {
+    fun newRequest(method: Method, args: Array<out Any>?): RestfulRequest {
         val arguments: Array<Any> = args as Array<Any>? ?: arrayOf()
         //解析入参
         parseMethodParameters(method,arguments)
-        val iRequest = IRequest()
-        iRequest.domainUrl = domainUrl
-        iRequest.returnType = returnType
-        iRequest.relativeUrl = replaceRelativeUrl ?: relativeUrl
-        iRequest.parameters = parametersMap
-        iRequest.headers = headersMap
-        iRequest.httpMethod = httpMethod
-        iRequest.formPost = formPost
-        iRequest.cacheStrategy = cacheStrategy
-        return iRequest
+        val request = RestfulRequest()
+        request.domainUrl = domainUrl
+        request.returnType = returnType
+        request.relativeUrl = replaceRelativeUrl ?: relativeUrl
+        request.parameters = parametersMap
+        request.headers = headersMap
+        request.httpMethod = httpMethod
+        request.formPost = formPost
+        request.cacheStrategy = cacheStrategy
+        return request
     }
 
 
     /**
-     * 解析入参
+     * 解析参数上的入参
      *  POST("/cities/{province}")
-     *  fun listCities(@Path("province") province: Int,@Filed("page") page: Int): ICall<JsonObject>
+     *  fun listCities(@Path("province") province: Int,@Filed("page") page: Int): RestfulCall<JsonObject>
      * 1.判断入参上都加注解了没,必须都加注解,目前支持Path或Field
      * 2.遍历传入的所有参数,看单个参数上的注解数量是否是1个,如果不是则抛出异常
      * 3.单个参数必须是基本数据类型和String类型,否则抛出异常

@@ -1,6 +1,6 @@
 package com.restful.kit
 
-import com.restful.kit.response.IResponse
+import com.restful.kit.response.RestfulResponse
 import java.lang.reflect.Type
 
 /**
@@ -9,6 +9,6 @@ import java.lang.reflect.Type
  * Email: hydznsqk@163.com
  * Des:
  */
-interface IConvert {
-    fun <T> convert(rawData: String, dataType: Type): IResponse<T>
+interface Convert {
+    fun <T> convert(rawData: String, dataType: Type): RestfulResponse<T>
 }

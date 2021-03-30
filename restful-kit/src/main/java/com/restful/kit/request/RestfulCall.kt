@@ -1,7 +1,7 @@
 package com.restful.kit.request
 
-import com.restful.kit.response.ICallBack
-import com.restful.kit.response.IResponse
+import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.RestfulResponse
 import java.io.IOException
 
 /**
@@ -10,19 +10,19 @@ import java.io.IOException
  * Email: hydznsqk@163.com
  * Des:
  */
-interface ICall<T> {
+interface RestfulCall<T> {
 
     /**
      * 发起同步请求
      */
     @Throws(IOException::class)
-    fun execute(): IResponse<T>
+    fun execute(): RestfulResponse<T>
 
 
     /**
      * 发起异步请求
      */
-    fun enqueue(callBack: ICallBack<T>)
+    fun enqueue(callBack: RestfulCallBack<T>)
 
 
     /**
@@ -32,6 +32,6 @@ interface ICall<T> {
         /**
          * 根据请求信息发起一个新请求
          */
-        fun newCall(request: IRequest): ICall<*>
+        fun newCall(request: RestfulRequest): RestfulCall<*>
     }
 }

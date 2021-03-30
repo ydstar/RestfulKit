@@ -45,7 +45,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
 
 
-//    implementation project(path: ':restful-kit')
-    implementation 'com.android.ydkit:restful-kit:1.0.0'
+    implementation project(path: ':restful-kit')
+//    implementation 'com.android.ydkit:restful-kit:1.0.0'
 
 }

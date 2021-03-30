@@ -1,6 +1,7 @@
 package com.example.restfulkit.http
 
-import com.restful.kit.IRestful
+
+import com.restful.kit.RestfulKit
 
 
 /**
@@ -11,19 +12,17 @@ import com.restful.kit.IRestful
  */
 object ApiFactory {
 
+    private val mBaseUrl = "https://api.github.com/"
 
-    val HTTPS_BASE_URL = "https://api.github.com/"
-
-    val baseUrl = HTTPS_BASE_URL
-    private val iRestful: IRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
+    private val mRestfulKit: RestfulKit = RestfulKit(mBaseUrl, RetrofitCallFactory(mBaseUrl))
 
     init {
-        iRestful.addInterceptor(BizInterceptor())
-        iRestful.addInterceptor(HttpCodeInterceptor())
+        mRestfulKit.addInterceptor(BizInterceptor())
+        mRestfulKit.addInterceptor(HttpCodeInterceptor())
 
     }
 
     fun <T> create(service: Class<T>): T {
-        return iRestful.create(service)
+        return mRestfulKit.create(service)
     }
 }

@@ -10,10 +10,10 @@ import com.example.restfulkit.http.ApiFactory
 import com.example.restfulkit.api.User
 import com.example.restfulkit.http.BizInterceptor
 import com.example.restfulkit.http.RetrofitCallFactory
-import com.restful.kit.IRestful
+import com.restful.kit.RestfulKit
 
-import com.restful.kit.response.ICallBack
-import com.restful.kit.response.IResponse
+import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.RestfulResponse
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,17 +28,18 @@ class MainActivity : AppCompatActivity() {
      * POST请求
      */
     fun onClickPrint(view: View?) {
+
         ApiFactory
             .create(ApiService::class.java)
             .login("swifty", "123456")
-            .enqueue(object : ICallBack<String> {
-                override fun onSuccess(response: IResponse<String>) {
-                    if (response.code == IResponse.SUCCESS) {
-                        println(response.data!! + "  SUCCESS 线程: " + Thread.currentThread().name)
+            .enqueue(object : RestfulCallBack<String> {
+                override fun onSuccess(response: RestfulResponse<String>) {
+                    if (response.code == RestfulResponse.SUCCESS) {
+                        println(response.data + "  SUCCESS 线程: " + Thread.currentThread().name)
                     } else {
-                        println(response.msg!! + "  fail 线程: " + Thread.currentThread().name)
+                        println(response.data + "  fail 线程: " + Thread.currentThread().name)
                     }
-                    showToast(response.msg!!)
+                    showToast(response.rawData)
                 }
 
                 override fun onFailed(throwable: Throwable) {
@@ -58,14 +59,14 @@ class MainActivity : AppCompatActivity() {
     fun simpleTest() {
         //初始化
         val baseUrl = "https://api.github.com/"
-        val iRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
-        iRestful.addInterceptor(BizInterceptor())
+        val restfulKit = RestfulKit(baseUrl, RetrofitCallFactory(baseUrl))
+        restfulKit.addInterceptor(BizInterceptor())
 
         //发起异步请求
-        iRestful.create(ApiService::class.java)
+        restfulKit.create(ApiService::class.java)
             .groupList(1, 10)
-            .enqueue(object : ICallBack<List<User>> {
-                override fun onSuccess(response: IResponse<List<User>>) {
+            .enqueue(object : RestfulCallBack<List<User>> {
+                override fun onSuccess(response: RestfulResponse<List<User>>) {
                     val data = response.data
                 }
 

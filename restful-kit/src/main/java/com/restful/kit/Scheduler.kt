@@ -1,15 +1,13 @@
 package com.restful.kit
 
-
-import com.restful.kit.cache.IStorage
+import com.executor.kit.ExecutorKit
 import com.restful.kit.annotation.CacheStrategy
-import com.restful.kit.request.ICall
-import com.restful.kit.request.IRequest
-import com.restful.kit.response.ICallBack
-import com.restful.kit.response.IResponse
-import com.restful.kit.util.IExecutor
+import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.RestfulRequest
+import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.RestfulResponse
 import com.restful.kit.util.MainHandler
-
+import com.storage.kit.StorageKit
 
 /**
  * Author: 信仰年轻
@@ -18,22 +16,22 @@ import com.restful.kit.util.MainHandler
  * Des:代理CallFactory创建出来的call对象，从而实现拦截器的派发动作
  */
 class Scheduler(
-    private val callFactory: ICall.Factory,
-    private val interceptorList: MutableList<IInterceptor>
+    private val callFactory: RestfulCall.Factory,
+    private val interceptorList: MutableList<RestfulInterceptor>
 ) {
 
 
-    fun newCall(request: IRequest): ICall<*> {
-        val iCall = callFactory.newCall(request)
-        return ProxyCall(iCall, request)
+    fun newCall(request: RestfulRequest): RestfulCall<*> {
+        val call = callFactory.newCall(request)
+        return ProxyCall(call, request)
     }
 
-    internal inner class ProxyCall<T> : ICall<T> {
+    internal inner class ProxyCall<T> : RestfulCall<T> {
 
-        private val mDelegate: ICall<T>
-        private val mRequest: IRequest
+        private val mDelegate: RestfulCall<T>
+        private val mRequest: RestfulRequest
 
-        constructor(delegate: ICall<T>, request: IRequest) {
+        constructor(delegate: RestfulCall<T>, request: RestfulRequest) {
             this.mDelegate = delegate
             this.mRequest = request
         }
@@ -41,7 +39,7 @@ class Scheduler(
         /**
          * 同步请求
          */
-        override fun execute(): IResponse<T> {
+        override fun execute(): RestfulResponse<T> {
             //请求前的拦截器的派发
             dispatchInterceptor(mRequest, null)
 
@@ -65,12 +63,12 @@ class Scheduler(
         /**
          * 异步请求
          */
-        override fun enqueue(callBack: ICallBack<T>) {
+        override fun enqueue(callBack: RestfulCallBack<T>) {
             //请求前的拦截器的派发
             dispatchInterceptor(mRequest, null)
             if (mRequest.cacheStrategy == CacheStrategy.CACHE_FIRST) {
                 //开子线程去从数据库中拿缓存的数据,拿到后切到主线程把数据返出去
-                IExecutor.execute(runnable = Runnable {
+                ExecutorKit.execute(runnable = Runnable {
                     val cacheResponse = readCache<T>()
                     if (cacheResponse.data != null) {
                         //切换到主线程
@@ -82,8 +80,8 @@ class Scheduler(
             }
 
             //真正的请求
-            mDelegate.enqueue(object : ICallBack<T> {
-                override fun onSuccess(response: IResponse<T>) {
+            mDelegate.enqueue(object : RestfulCallBack<T> {
+                override fun onSuccess(response: RestfulResponse<T>) {
                     //请求后的拦截器的派发
                     dispatchInterceptor(mRequest, response)
                     saveCacheIfNeed(response)
@@ -99,13 +97,13 @@ class Scheduler(
         /**
          * 保存缓存到本地如果需要的话(CacheStrategy.CACHE_FIRST 或 CacheStrategy.NET_CACHE)
          */
-        private fun saveCacheIfNeed(response: IResponse<T>) {
+        private fun saveCacheIfNeed(response: RestfulResponse<T>) {
             if (mRequest.cacheStrategy == CacheStrategy.CACHE_FIRST ||
                 mRequest.cacheStrategy == CacheStrategy.NET_CACHE) {
 
                 if(response.data!=null){
-                    IExecutor.execute(runnable = Runnable {
-                        IStorage.saveCache(mRequest.getCacheKey(),response.data)
+                    ExecutorKit.execute(runnable = Runnable {
+                        StorageKit.saveCache(mRequest.getCacheKey(),response.data)
                     })
                 }
             }
@@ -114,13 +112,13 @@ class Scheduler(
         /**
          * 读取缓存并包装成IResponse对象
          */
-        private fun <T> readCache(): IResponse<T> {
-            //IStorage查找缓存的时候,需要提供一个cache key
+        private fun <T> readCache(): RestfulResponse<T> {
+            //StorageKit查找缓存的时候,需要提供一个cache key
             val cacheKey = mRequest.getCacheKey()
-            val cache = IStorage.getCache<T>(cacheKey)
-            val cacheResponse = IResponse<T>()
+            val cache = StorageKit.getCache<T>(cacheKey)
+            val cacheResponse = RestfulResponse<T>()
             cacheResponse.data = cache
-            cacheResponse.code = IResponse.CACHE_SUCCESS
+            cacheResponse.code = RestfulResponse.CACHE_SUCCESS
             cacheResponse.msg = "缓存获取成功"
             return cacheResponse
         }
@@ -129,7 +127,7 @@ class Scheduler(
         /**
          * 派发拦截器
          */
-        private fun dispatchInterceptor(request: IRequest, response: IResponse<T>?) {
+        private fun dispatchInterceptor(request: RestfulRequest, response: RestfulResponse<T>?) {
             if (interceptorList.size <= 0) {
                 return
             }
@@ -143,18 +141,18 @@ class Scheduler(
         /**
          * 实现拦截器的接口
          */
-        internal inner class InterceptorChain(var request: IRequest, var response: IResponse<T>?) :
-            IInterceptor.Chain {
+        internal inner class InterceptorChain(var request: RestfulRequest, var response: RestfulResponse<T>?) :
+            RestfulInterceptor.Chain {
 
             //当前是否是request阶段,response为空就是在请求阶段
             override val isRequestPeriod: Boolean
                 get() = response == null
 
-            override fun request(): IRequest {
+            override fun request(): RestfulRequest {
                 return request
             }
 
-            override fun response(): IResponse<*>? {
+            override fun response(): RestfulResponse<*>? {
                 return response
             }
 

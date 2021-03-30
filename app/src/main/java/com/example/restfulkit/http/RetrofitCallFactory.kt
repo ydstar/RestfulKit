@@ -1,10 +1,11 @@
 package com.example.restfulkit.http
 
-import com.restful.kit.IConvert
-import com.restful.kit.request.ICall
-import com.restful.kit.request.IRequest
-import com.restful.kit.response.ICallBack
-import com.restful.kit.response.IResponse
+
+import com.restful.kit.Convert
+import com.restful.kit.request.RestfulCall
+import com.restful.kit.request.RestfulRequest
+import com.restful.kit.response.RestfulCallBack
+import com.restful.kit.response.RestfulResponse
 import okhttp3.FormBody
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -23,29 +24,29 @@ import java.lang.IllegalStateException
  * Email: hydznsqk@163.com
  * Des:自定义网络请求工厂类
  */
-class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
+class RetrofitCallFactory(baseUrl: String) : RestfulCall.Factory {
 
 
-    private var iConvert: IConvert
-    private var apiService: ApiService
+    private var mConvert: Convert
+    private var mApiService: ApiService
 
     init {
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .build()
-        apiService = retrofit.create(ApiService::class.java)
-        iConvert = GsonConvert()
+        mApiService = retrofit.create(ApiService::class.java)
+        mConvert = GsonConvert()
     }
 
-    override fun newCall(request: IRequest): ICall<Any> {
+    override fun newCall(request: RestfulRequest): RestfulCall<Any> {
         return RetrofitCall(request)
     }
 
-    internal inner class RetrofitCall<T>(val request: IRequest) : ICall<T> {
+    internal inner class RetrofitCall<T>(val request: RestfulRequest) : RestfulCall<T> {
         /**
          * 同步请求
          */
-        override fun execute(): IResponse<T> {
+        override fun execute(): RestfulResponse<T> {
             //创建真正的请求call
             val realCall: Call<ResponseBody> = createRealCall(request)
             //真正的同步请求
@@ -57,7 +58,7 @@ class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
         /**
          * 异步请求
          */
-        override fun enqueue(callBack: ICallBack<T>) {
+        override fun enqueue(callBack: RestfulCallBack<T>) {
             //创建真正的请求call
             val realCall: Call<ResponseBody> = createRealCall(request)
             realCall.enqueue(object : Callback<ResponseBody>{
@@ -74,24 +75,24 @@ class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
         /**
          * 创建真正的请求call,就是retrofit的发起请求
          */
-        private fun createRealCall(request: IRequest): Call<ResponseBody> {
+        private fun createRealCall(request: RestfulRequest): Call<ResponseBody> {
             when (request.httpMethod) {
-                IRequest.METHOD.GET -> {
-                    return apiService.get(request.headers,request.endPointUrl(),request.parameters)
+                RestfulRequest.METHOD.GET -> {
+                    return mApiService.get(request.headers,request.endPointUrl(),request.parameters)
                 }
-                IRequest.METHOD.POST -> {
+                RestfulRequest.METHOD.POST -> {
                     val requestBody: RequestBody = buildRequestBody(request)
-                    return apiService.post(request.headers, request.endPointUrl(), requestBody)
+                    return mApiService.post(request.headers, request.endPointUrl(), requestBody)
                 }
-                IRequest.METHOD.PUT -> {
+                RestfulRequest.METHOD.PUT -> {
                     val requestBody: RequestBody = buildRequestBody(request)
-                    return apiService.put(request.headers, request.endPointUrl(), requestBody)
+                    return mApiService.put(request.headers, request.endPointUrl(), requestBody)
                 }
-                IRequest.METHOD.DELETE -> {
-                    return apiService.delete(request.headers, request.endPointUrl())
+                RestfulRequest.METHOD.DELETE -> {
+                    return mApiService.delete(request.headers, request.endPointUrl())
                 }
                 else -> {
-                    throw IllegalStateException("iRestful只支持 GET,POST,PUT,DELETE请求 ,url=" + request.endPointUrl())
+                    throw IllegalStateException("RestfulKit只支持 GET,POST,PUT,DELETE请求 ,url=" + request.endPointUrl())
                 }
             }
         }
@@ -99,7 +100,7 @@ class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
         /**
          * 创建请求body
          */
-        private fun buildRequestBody(request: IRequest): RequestBody {
+        private fun buildRequestBody(request: RestfulRequest): RequestBody {
             val parameters: MutableMap<String, String>? = request.parameters
 
             val builder = FormBody.Builder()
@@ -129,9 +130,9 @@ class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
 
 
         /**
-         * 解析响应体并封装成IResponse对象
+         * 解析响应体并封装成RestfulResponse对象
          */
-        private fun parseResponse(response: Response<ResponseBody>): IResponse<T> {
+        private fun parseResponse(response: Response<ResponseBody>): RestfulResponse<T> {
           var rawData:String? = null
             //请求成功
             if(response.isSuccessful){
@@ -145,7 +146,7 @@ class RetrofitCallFactory(baseUrl: String) : ICall.Factory {
                     rawData = errorBody.string()
                 }
             }
-            return iConvert.convert(rawData!!,request.returnType!!)
+            return mConvert.convert(rawData!!,request.returnType!!)
         }
     }
 

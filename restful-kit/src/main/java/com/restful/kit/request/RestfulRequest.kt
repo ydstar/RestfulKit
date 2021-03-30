@@ -14,7 +14,7 @@ import java.net.URLEncoder
  * Email: hydznsqk@163.com
  * Des: request请求发起的包装类对象,里面包含了要请求携带的所有信息
  */
-open class IRequest {
+open class RestfulRequest {
 
     //请求方式
     @METHOD

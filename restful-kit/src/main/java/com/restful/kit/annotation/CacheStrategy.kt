@@ -10,7 +10,7 @@ package com.restful.kit.annotation
  *  作用在方法上
  *  @CacheStrategy(CacheStrategy.CACHE_FIRST)
  *  @GET("category/categories")
- *  fun queryTabList(): ICall<List<TabCategory>>
+ *  fun queryTabList(): RestfulCall<List<TabCategory>>
  *
  *  作用在参数字段上
  *  @GET("home/{categoryId}")
@@ -19,7 +19,7 @@ package com.restful.kit.annotation
  *      @Path("categoryId") categoryId: String,
  *      @Filed("pageIndex") pageIndex: Int,
  *      @Filed("pageSize") pageSize: Int
- *   ): ICall<HomeModel>
+ *   ): RestfulCall<HomeModel>
  */
 @Target(AnnotationTarget.FUNCTION,AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

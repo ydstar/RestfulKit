@@ -6,7 +6,7 @@ package com.restful.kit.response
  * Email: hydznsqk@163.com
  * Des: 响应报文的包装类对象
  */
-open class IResponse<T> {
+open class RestfulResponse<T> {
 
 
     companion object{

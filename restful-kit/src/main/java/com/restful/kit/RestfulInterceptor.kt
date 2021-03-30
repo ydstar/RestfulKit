@@ -1,7 +1,7 @@
 package com.restful.kit
 
-import com.restful.kit.request.IRequest
-import com.restful.kit.response.IResponse
+import com.restful.kit.request.RestfulRequest
+import com.restful.kit.response.RestfulResponse
 
 /**
  * Author: 信仰年轻
@@ -9,7 +9,7 @@ import com.restful.kit.response.IResponse
  * Email: hydznsqk@163.com
  * Des: 拦截器的顶层接口,发起请求和收到响应都会执行拦截器
  */
-interface IInterceptor {
+interface RestfulInterceptor {
 
     /**
      * 是否拦截
@@ -24,11 +24,11 @@ interface IInterceptor {
         //当前是否是request阶段
         val isRequestPeriod:Boolean get()=false
 
-        fun request(): IRequest
+        fun request(): RestfulRequest
 
         /**
          * 这个response对象 在网络发起之前 ，是为空的
          */
-        fun response(): IResponse<*>?
+        fun response(): RestfulResponse<*>?
     }
 }

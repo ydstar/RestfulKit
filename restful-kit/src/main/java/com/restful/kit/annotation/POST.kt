@@ -6,11 +6,14 @@ package com.restful.kit.annotation
  * Email: hydznsqk@163.com
  * Des: POST 作用在方法,运行时
  * 例子:
- *      @Headers("auth-token:token", "accountId:123456")
- *      @BaseUrl("https://www.baidu.com/as/")
- *      @POST("/cities/{province}")
- *      @GET("/cities")
- *     fun listCities(@Path("province") province: Int,@Filed("page") page: Int): ICall<JsonObject>
+ *         @GET("group/{id}/users")
+ *         @POST("group/{id}/users",formPost = false)
+ *         @DELETE("group/{id}/users",formPost = false)
+ *         @PUT("group/{id}/users",formPost = false)
+ *         @BaseUrl("https://api.github.com/")
+ *         @Headers("auth-token:token", "token")
+ *         @CacheStrategy(CacheStrategy.CACHE_FIRST)
+ *         fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

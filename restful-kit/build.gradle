@@ -42,9 +42,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    //room 数据库
-    def room_version = "2.2.5"
-    implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+
+    implementation 'com.android.ydkit:executor-kit:1.0.0'
+    implementation 'com.android.ydkit:storage-kit:1.0.0'
 }
 apply from: './bintray.gradle'

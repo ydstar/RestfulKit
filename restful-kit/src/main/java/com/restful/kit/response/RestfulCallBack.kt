@@ -6,12 +6,12 @@ package com.restful.kit.response
  * Email: hydznsqk@163.com
  * Des:
  */
-interface ICallBack<T>{
+interface RestfulCallBack<T>{
 
     /**
      * 请求成功
      */
-    fun onSuccess(response: IResponse<T>)
+    fun onSuccess(response: RestfulResponse<T>)
 
 
     /**

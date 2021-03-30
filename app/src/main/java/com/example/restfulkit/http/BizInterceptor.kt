@@ -1,27 +1,29 @@
 package com.example.restfulkit.http
 
 import android.util.Log
-import com.restful.kit.IInterceptor
-import com.restful.kit.request.IRequest
+
+import com.restful.kit.RestfulInterceptor
+import com.restful.kit.request.RestfulRequest
 
 
 /**
  * Author: 信仰年轻
  * Date: 2020-11-05 17:02
  * Email: hydznsqk@163.com
- * Des:
+ * Des: 业务拦截器,在请求中添加header和拦截返回并打印log
  */
-class BizInterceptor: IInterceptor {
-    override fun intercept(chain: IInterceptor.Chain): Boolean {
+class BizInterceptor: RestfulInterceptor {
+
+    override fun intercept(chain: RestfulInterceptor.Chain): Boolean {
         val request = chain.request()
         val response = chain.response()
         if (chain.isRequestPeriod) {
             //添加token
             request.addHeader("auth-token", "token")
         } else if (response != null) {
-            var outputBuilder = StringBuilder()
+            val outputBuilder = StringBuilder()
             val httpMethod: String =
-                if (request.httpMethod == IRequest.METHOD.GET) "GET" else "POST"
+                if (request.httpMethod == RestfulRequest.METHOD.GET) "GET" else "POST"
             val requestUrl: String = request.endPointUrl()
             outputBuilder.append("\n$requestUrl==>$httpMethod\n")
 

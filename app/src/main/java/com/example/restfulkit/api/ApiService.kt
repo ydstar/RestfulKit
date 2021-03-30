@@ -1,9 +1,8 @@
 package com.example.restfulkit.api
 
 
-import com.google.gson.JsonObject
 import com.restful.kit.annotation.*
-import com.restful.kit.request.ICall
+import com.restful.kit.request.RestfulCall
 
 
 interface ApiService {
@@ -15,13 +14,13 @@ interface ApiService {
     @BaseUrl("https://api.github.com/")
     @Headers("auth-token:token", "token")
     @CacheStrategy(CacheStrategy.CACHE_FIRST)
-    fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): ICall<List<User>>
+    fun groupList(@Path("id") groupId: Int,@Filed("page") page: Int): RestfulCall<List<User>>
 
 
     @POST("user/login")
     fun login(
         @Filed("userName") userName: String,
         @Filed("password") password: String
-    ): ICall<String>
+    ): RestfulCall<String>
 }
 
