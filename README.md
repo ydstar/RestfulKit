@@ -35,7 +35,7 @@ YdKit 是一组功能丰富的 Android 通用组件。
 仅支持`AndroidX`
 ```
 dependencies {
-     implementation 'com.android.ydkit:restful-kit:1.0.0'
+     implementation 'com.android.ydkit:restful-kit:1.0.1'
 }
 ```
 
@@ -61,14 +61,14 @@ interface ApiService {
 ```java
 //初始化
 val baseUrl = "https://api.github.com/"
-val iRestful = IRestful(baseUrl, RetrofitCallFactory(baseUrl))
-iRestful.addInterceptor(BizInterceptor())
+val restfulKit = RestfulKit(baseUrl, RetrofitCallFactory(baseUrl))
+restfulKit.addInterceptor(BizInterceptor())
 
 //发起异步请求
-iRestful.create(ApiService::class.java)
+restfulKit.create(ApiService::class.java)
          .groupList(1,10)
          .enqueue(object : ICallBack<List<User>> {
-             override fun onSuccess(response: IResponse<List<User>>) {
+             override fun onSuccess(response: RestfulResponse<List<User>>) {
                  val data = response.data
              }
 
